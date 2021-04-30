@@ -1,0 +1,13 @@
+Package: historicalInvesting
+Title: Historical Investing Simulator
+Version: 0.0.0.9000
+Authors@R: person('Spencer', 'Matthews', email = 'srmatthews98@gamil.com', role = c('cre', 'aut'))
+Description: Functions and a shiny app that aid in seeing what historical results would have been for various portfolios.
+License: MIT + file LICENSE
+Imports: 
+    config,
+    golem,
+    shiny
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
