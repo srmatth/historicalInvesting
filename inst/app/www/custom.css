@@ -1,0 +1,46 @@
+
+/* Custom Containers */
+.custom-header {
+  width: 100%;
+  margin: 0;
+  padding: 15px;
+  background-color: #0a2107;
+  text-align: center;
+  color: #e5f4e3;
+}
+
+.custom-footer {
+  width: 100%;
+  margin: 0;
+  padding: 5px 10px;
+  background-color: #9d8420;
+  text-align: right;
+  font-size: 8pt;
+  color: #ffffff;
+}
+a {
+  color: #acc3b6;
+}
+a:hover {
+  color: #719883;
+}
+a:active {
+  color: #719883 !important;
+}
+
+
+/* Alter existing css */
+.container-fluid {
+  padding: 0;
+}
+
+.well {
+  margin: 0;
+  background-color: #acc3b6;
+  border: none;
+  border-radius: 0;
+}
+
+.row {
+  background-color: #e5f4e3;
+}

@@ -10,7 +10,34 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     # List the first level UI elements here 
     fluidPage(
-      h1("historicalInvesting")
+      div(
+        class = "custom-header",
+        h1("Historical Stock Simulations")
+      ),
+      sidebarLayout(
+        sidebarPanel = mod_sidebar_ui("sidebar_ui_1"),
+        mainPanel = mod_body_ui("body_ui_1")
+      ),
+      div(
+        class = "custom-footer",
+        p(
+          "Stock price data is obtained from ",
+          tags$a(
+            href = "https://finance.yahoo.com/",
+            "Yahoo Finance"
+          ),
+          " and dividend data is obtained from ",
+          tags$a(
+            href = "https://www.dividendinformation.com/",
+            "Dividend Information."
+          ),
+          br(),
+          "This in no way constitutes financial advice.  ",
+          "Past success does not guarantee future results.",
+          br(),
+          stringr::str_c("Version ", sessionInfo()$otherPkgs$historicalInvesting$Version)
+        )
+      )
     )
   )
 }

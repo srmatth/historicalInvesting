@@ -1,0 +1,35 @@
+#' sidebar UI Function
+#'
+#' @description A shiny Module.
+#'
+#' @param id,input,output,session Internal parameters for {shiny}.
+#'
+#' @noRd 
+#'
+#' @importFrom shiny NS tagList 
+mod_sidebar_ui <- function(id){
+  ns <- NS(id)
+  sidebarPanel(
+    h2("This is the sidebar panel"),
+    br(),
+    br(),
+    br(),
+    br(),
+    h4("Then some button down here")
+  )
+}
+    
+#' sidebar Server Function
+#'
+#' @noRd 
+mod_sidebar_server <- function(input, output, session, rv){
+  ns <- session$ns
+ 
+}
+    
+## To be copied in the UI
+# mod_sidebar_ui("sidebar_ui_1")
+    
+## To be copied in the server
+# callModule(mod_sidebar_server, "sidebar_ui_1")
+ 
