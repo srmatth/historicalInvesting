@@ -59,7 +59,7 @@ get_historical_dividends <- function(tickers, start_date = NULL, verbose = TRUE)
         )
         dividend_data <- page %>%
           rvest::html_nodes("table") %>%
-          `[[`(4) %>%
+          `[[`(length(.)) %>%
           rvest::html_table() %>%
           janitor::row_to_names(row_number = 1) %>%
           dplyr::select(-Note) %>%

@@ -11,10 +11,31 @@ mod_sidebar_ui <- function(id){
   ns <- NS(id)
   sidebarPanel(
     h2("Enter Positions:"),
+    hr(style = "color:black"),
     h5(""),
-    actionButton(
-      inputId = ns("add"),
-      label = "Add Position"
+    fluidRow(
+      col_4(
+        actionButton(
+          inputId = ns("add"),
+          label = "Add Position"
+        )
+      ),
+      col_4(
+        offset = 4,
+        actionButton(
+          inputId = ns("refresh"),
+          label = "Remove All Positions"
+        )
+      )
+    ),
+    fluidRow(
+      col_4(
+        offset = 4,
+        actionButton(
+          inputId = ns("go"),
+          label = "Run Simulation"
+        )
+      )
     )
   )
 }
@@ -28,14 +49,14 @@ mod_sidebar_server <- function(input, output, session, rv){
   all_positions <- reactiveValues()
   
   position_1 <- callModule(mod_ticker_server, paste0("position_", 1))
+  insertUI(
+    selector = "h5",
+    where    = "beforeEnd",
+    ui       = tagList(mod_ticker_ui(ns(paste0("position_", 1))))
+  )
   
   observe({
-    all_positions[['1']] <- position_1()
-    insertUI(
-      selector = "h5",
-      where    = "beforeEnd",
-      ui       = tagList(mod_ticker_ui(paste0("position_", 1)))
-    )
+    all_positions[["pos_1"]] <- position_1()
   })
   
   observeEvent(input$add, {
@@ -45,15 +66,23 @@ mod_sidebar_server <- function(input, output, session, rv){
     insertUI(
       selector = "h5",
       where    = "beforeEnd",
-      ui       = tagList(mod_ticker_ui(paste0("position_", btn)))
+      ui       = tagList(mod_ticker_ui(ns(paste0("position_", btn))))
     )
     
     new_position <- callModule(mod_ticker_server, paste0("position_", btn))
     
     observeEvent(new_position(), {
-      tmpFilters[[paste0("'", btn, "'")]] <- new_position()
+      all_positions[[paste0("pos_", btn)]] <- new_position()
     })
     
+  })
+  
+  rv$data <- eventReactive(input$go, {
+    l <- rvtl(all_positions)
+    purrr::map_dfr(
+      .x = l,
+      .f = run_simulation
+    )
   })
  
 }

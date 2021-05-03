@@ -12,6 +12,7 @@ mod_ticker_ui <- function(id){
   tagList(
     div(
       fluidRow(
+        class = "ticker-input",
         col_4(
           style = "margin: 5px, 0",
           textInput(
@@ -44,6 +45,7 @@ mod_ticker_ui <- function(id){
         )
       ),
       fluidRow(
+        class = "ticker-input",
         div(
           h4("Additional Deposits", style = "margin:0"),
           style = "text-align:center; margin:0; padding:0"
@@ -86,7 +88,9 @@ mod_ticker_ui <- function(id){
             label = "Reinvest Dividends"
           )
         )
-      )
+      ),
+      hr(style = "color:black"),
+      br()
     )
   )
 }
@@ -98,9 +102,16 @@ mod_ticker_server <- function(input, output, session){
   ns <- session$ns
   
   reactive({
-    print("I'm in the server")
+    l <- list(
+        ticker = input$ticker,
+        start_date = input$start_date,
+        start_amt = input$start_amt,
+        freq = input$freq,
+        add_amt = input$add_amt,
+        reinvest = input$reinvest
+    )
     
-    return(input$ticker)
+    return(l)
   })
  
 }

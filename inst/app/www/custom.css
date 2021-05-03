@@ -48,3 +48,11 @@ a:active {
 label {
   margin-bottom: 0;
 }
+hr {
+  border-top: 2px solid #0A2107;
+  margin: 0;
+}
+
+.ticker-input {
+  background-color: #acc3b6;
+}
