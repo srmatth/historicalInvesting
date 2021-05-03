@@ -18,6 +18,7 @@ Imports:
     rlang,
     rvest,
     shiny,
+    shinyWidgets,
     stringr,
     xml2
 Encoding: UTF-8

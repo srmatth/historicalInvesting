@@ -96,6 +96,12 @@ mod_ticker_ui <- function(id){
 #' @noRd 
 mod_ticker_server <- function(input, output, session){
   ns <- session$ns
+  
+  reactive({
+    print("I'm in the server")
+    
+    return(input$ticker)
+  })
  
 }
     

@@ -62,3 +62,6 @@ drop_nulls <- function(x){
 rv <- shiny::reactiveValues
 rvtl <- shiny::reactiveValuesToList
 
+#' @importFrom utils sessionInfo
+NULL
+

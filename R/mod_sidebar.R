@@ -10,16 +10,12 @@
 mod_sidebar_ui <- function(id){
   ns <- NS(id)
   sidebarPanel(
-    h2("This is the sidebar panel"),
-    br(),
-    br(),
-    br(),
-    br(),
-    h4("Then some button down here"),
-    br(),
-    mod_ticker_ui("ticker_ui_1"),
-    br(),
-    br()
+    h2("Enter Positions:"),
+    h5(""),
+    actionButton(
+      inputId = ns("add"),
+      label = "Add Position"
+    )
   )
 }
     
@@ -28,6 +24,37 @@ mod_sidebar_ui <- function(id){
 #' @noRd 
 mod_sidebar_server <- function(input, output, session, rv){
   ns <- session$ns
+  
+  all_positions <- reactiveValues()
+  
+  position_1 <- callModule(mod_ticker_server, paste0("position_", 1))
+  
+  observe({
+    all_positions[['1']] <- position_1()
+    insertUI(
+      selector = "h5",
+      where    = "beforeEnd",
+      ui       = tagList(mod_ticker_ui(paste0("position_", 1)))
+    )
+  })
+  
+  observeEvent(input$add, {
+    
+    btn <- sum(input$add, 1)
+    
+    insertUI(
+      selector = "h5",
+      where    = "beforeEnd",
+      ui       = tagList(mod_ticker_ui(paste0("position_", btn)))
+    )
+    
+    new_position <- callModule(mod_ticker_server, paste0("position_", btn))
+    
+    observeEvent(new_position(), {
+      tmpFilters[[paste0("'", btn, "'")]] <- new_position()
+    })
+    
+  })
  
 }
     
