@@ -31,7 +31,7 @@ get_historical_prices <- function(tickers) {
 #' A function to get historical dividend information from 
 #' dividendinformation.com
 #'
-#' @param ticker A string identifying the ticker of the stock to get 
+#' @param tickers A string identifying the ticker of the stock to get 
 #'   information on, all caps
 #' @param start_date A string identifying the date on which the information 
 #'   should start (ymd format), if NULL, returns all available information

@@ -44,3 +44,7 @@ a:active {
 .row {
   background-color: #e5f4e3;
 }
+
+label {
+  margin-bottom: 0;
+}

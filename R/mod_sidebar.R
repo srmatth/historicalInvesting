@@ -15,7 +15,11 @@ mod_sidebar_ui <- function(id){
     br(),
     br(),
     br(),
-    h4("Then some button down here")
+    h4("Then some button down here"),
+    br(),
+    mod_ticker_ui("ticker_ui_1"),
+    br(),
+    br()
   )
 }
     
