@@ -18,7 +18,7 @@ run_simulation <- function(l) {
     dplyr::mutate(pct_growth = close / start_price)
   if (l$freq != "Never") {
     deposits <- data.frame(
-      date = seq.Date(lubridate::ymd(l$start_date), Sys.Date(), by = "2 weeks"),
+      date = seq.Date(lubridate::ymd(l$start_date), Sys.Date(), by = tolower(l$freq)),
       amount = l$add_amt
     ) 
     deposits[1, 2] <- l$start_amt

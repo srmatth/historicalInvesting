@@ -55,16 +55,16 @@ mod_ticker_ui <- function(id){
           offset = 2,
           selectInput(
             inputId = ns("freq"),
-            label = "Frequency",
+            label = "Deposit Every...",
             choices = c(
               "Never",
-              "Daily",
-              "Weekly",
-              "Bi-Weekly",
-              "Monthly",
-              "Quarterly",
-              "Semi-Annually",
-              "Annually"
+              "Day",
+              "Week",
+              "2 Weeks",
+              "Month",
+              "Quarter",
+              "6 Months",
+              "Year"
             )
           )
         ),
@@ -73,7 +73,7 @@ mod_ticker_ui <- function(id){
           shinyWidgets::autonumericInput(
             inputId = ns("add_amt"),
             label = "Amount",
-            value = 1000,
+            value = 0,
             currencySymbol = "$",
             currencySymbolPlacement = "p",
             digitGroupSeparator = ",",
@@ -85,7 +85,10 @@ mod_ticker_ui <- function(id){
           offset = 4,
           shinyWidgets::prettyCheckbox(
             inputId = ns("reinvest"),
-            label = "Reinvest Dividends"
+            label = "Reinvest Dividends",
+            outline = TRUE,
+            value = TRUE,
+            icon = icon("check")
           )
         )
       ),

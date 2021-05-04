@@ -14,22 +14,27 @@ mod_sidebar_ui <- function(id){
     hr(style = "color:black"),
     h5(""),
     fluidRow(
-      col_4(
+      class = "ticker-input",
+      col_6(
+        style = "padding: 4px",
         actionButton(
           inputId = ns("add"),
           label = "Add Position"
         )
       ),
-      col_4(
-        offset = 4,
+      col_6(
+        style = "padding: 4px",
         actionButton(
           inputId = ns("refresh"),
           label = "Remove All Positions"
         )
       )
     ),
+    br(),
     fluidRow(
+      class = "ticker-input",
       col_4(
+        style = "padding: 4px",
         offset = 4,
         actionButton(
           inputId = ns("go"),

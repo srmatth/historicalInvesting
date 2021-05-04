@@ -17,6 +17,7 @@
   text-align: right;
   font-size: 8pt;
   color: #ffffff;
+  position: absolute;
 }
 a {
   color: #acc3b6;
@@ -36,6 +37,8 @@ a:active {
 
 .well {
   margin: 0;
+  margin-bottom:-101%;
+  padding-bottom:101%;
   background-color: #acc3b6;
   border: none;
   border-radius: 0;
@@ -43,6 +46,7 @@ a:active {
 
 .row {
   background-color: #e5f4e3;
+  overflow:hidden;
 }
 
 label {
@@ -55,4 +59,12 @@ hr {
 
 .ticker-input {
   background-color: #acc3b6;
+}
+
+.btn {
+  width: 100%;
+}
+
+.pretty .state label:after, .pretty .state label:before {
+  background-color: #ffffff !important;
 }

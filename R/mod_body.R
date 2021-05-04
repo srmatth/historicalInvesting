@@ -10,8 +10,19 @@
 mod_body_ui <- function(id){
   ns <- NS(id)
   mainPanel(
-    h1("Simulation for the Given Positions"),
-    plotOutput(outputId = ns("plt"))
+    fluidRow(
+      style = "padding-top: 15px",
+      column(
+        width = 5,
+        offset = 1,
+        shinydashboard::valueBoxOutput(outputId = ns("cur_val"), width = 12)
+      ),
+      column(
+        width = 5,
+        shinydashboard::valueBoxOutput(outputId = ns("principle"), width = 12)
+      )
+    ),
+    plotly::plotlyOutput(outputId = ns("plt"))
   )
 }
     
@@ -21,16 +32,51 @@ mod_body_ui <- function(id){
 mod_body_server <- function(input, output, session, rv){
   ns <- session$ns
   
-  output$plt <- renderPlot({
+  output$principle <- shinydashboard::renderValueBox({
+    req(rv$data())
+    rv$data() %>%
+      dplyr::mutate(date = lubridate::ymd(date)) %>%
+      dplyr::group_by(date) %>%
+      dplyr::summarize(principle = sum(tot_amt)) %>%
+      dplyr::ungroup() %>%
+      dplyr::slice_max(date) %>%
+      dplyr::pull(principle) %>%
+      scales::dollar(accuracy = 1) %>%
+      value_box(
+        subtitle = "Amount Contributed",
+        width = 12,
+        background = "#942911",
+        icon = icon("hand-holding-usd")
+      )
+  })
+  output$cur_val <- shinydashboard::renderValueBox({
     req(rv$data())
     rv$data() %>%
       dplyr::mutate(date = lubridate::ymd(date)) %>%
       dplyr::group_by(date) %>%
       dplyr::summarize(curr_value = sum(curr_value)) %>%
       dplyr::ungroup() %>%
+      dplyr::slice_max(date) %>%
+      dplyr::pull(curr_value) %>%
+      scales::dollar(accuracy = 1) %>%
+      value_box(
+        subtitle = "Current Value",
+        width = 12,
+        background = "#942911",
+        icon = icon("chart-line")
+      )
+  })
+  
+  output$plt <- plotly::renderPlotly({
+    req(rv$data())
+    plotly::ggplotly(rv$data() %>%
+      dplyr::mutate(date = lubridate::ymd(date)) %>%
+      dplyr::group_by(date) %>%
+      dplyr::summarize(curr_value = sum(curr_value)) %>%
+      dplyr::ungroup() %>%
       ggplot2::ggplot() +
       ggplot2::aes(x = date, y = curr_value) +
-      ggplot2::geom_line()
+      ggplot2::geom_line())
   })
  
 }
