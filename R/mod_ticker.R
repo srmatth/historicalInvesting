@@ -11,6 +11,7 @@ mod_ticker_ui <- function(id){
   ns <- NS(id)
   tagList(
     div(
+      class = "ticker-group",
       fluidRow(
         class = "ticker-input",
         col_4(
@@ -27,7 +28,7 @@ mod_ticker_ui <- function(id){
           dateInput(
             inputId = ns("start_date"),
             label = "Start Date",
-            value = NULL
+            value = Sys.Date() - lubridate::years(5)
           )
         ),
         col_4(

@@ -13,6 +13,8 @@ mod_sidebar_ui <- function(id){
     h2("Enter Positions:"),
     hr(style = "color:black"),
     h5(""),
+    br(),
+    br(),
     fluidRow(
       class = "ticker-input",
       col_6(
@@ -30,6 +32,7 @@ mod_sidebar_ui <- function(id){
         )
       )
     ),
+    br(),
     br(),
     fluidRow(
       class = "ticker-input",
@@ -66,7 +69,7 @@ mod_sidebar_server <- function(input, output, session, rv){
   
   observeEvent(input$add, {
     
-    btn <- sum(input$add, 1)
+    btn <- sum(input$add, input$refresh, 1)
     
     insertUI(
       selector = "h5",
@@ -84,10 +87,36 @@ mod_sidebar_server <- function(input, output, session, rv){
   
   rv$data <- eventReactive(input$go, {
     l <- rvtl(all_positions)
+    print(l)
     purrr::map_dfr(
       .x = l,
       .f = run_simulation
     )
+  })
+  
+  observeEvent(input$refresh, {
+    btn <- sum(input$add, input$refresh, 1)
+    all_positions <<- NULL
+    
+    removeUI(
+      selector = ".ticker-group",
+      multiple = TRUE,
+      immediate = TRUE
+    )
+    
+    all_positions <<- rv()
+    
+    insertUI(
+      selector = "h5",
+      where    = "beforeEnd",
+      ui       = tagList(mod_ticker_ui(ns(paste0("position_", btn))))
+    )
+    
+    newest_position <- callModule(mod_ticker_server, paste0("position_", btn))
+    
+    observeEvent(newest_position(), {
+      all_positions[[paste0("pos_", btn)]] <- newest_position()
+    })
   })
  
 }

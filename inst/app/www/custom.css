@@ -59,10 +59,12 @@ hr {
 
 .ticker-input {
   background-color: #acc3b6;
+  overflow:visible;
 }
 
 .btn {
   width: 100%;
+  white-space: normal;
 }
 
 .pretty .state label:after, .pretty .state label:before {

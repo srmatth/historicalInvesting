@@ -1,23 +1,28 @@
 Package: historicalInvesting
 Title: Historical Investing Simulator
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: person('Spencer', 'Matthews', email = 'srmatthews98@gamil.com', role = c('cre', 'aut'))
 Description: Functions and a shiny app that aid in seeing what historical results would have been for various portfolios.
 License: MIT + file LICENSE
 Imports: 
     config,
     dplyr,
+    gganimate,
+    ggplot2,
     golem,
     htmltools,
     janitor,
     logger,
     lubridate,
     magrittr,
+    plotly,
     purrr,
     readr,
     rlang,
     rvest,
+    scales,
     shiny,
+    shinydashboard,
     shinyWidgets,
     stringr,
     xml2,
