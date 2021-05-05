@@ -7,5 +7,11 @@ $run_dev.*
 ^LICENSE\.md$
 ^README\.Rmd$
 ^\.travis\.yml$
+<<<<<<< HEAD
+^historicalInvesting\.Rcheck$
+^historicalInvesting.*\.tar\.gz$
+^historicalInvesting.*\.tgz$
+=======
 ^app\.R$
 ^rsconnect$
+>>>>>>> a2f3ad7c66abd8e4065c3a8fdfacbd9e5d896df1
