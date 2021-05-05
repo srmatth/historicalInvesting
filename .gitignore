@@ -3,3 +3,6 @@
 .Rdata
 .httr-oauth
 .DS_Store
+historicalInvesting.Rcheck/
+historicalInvesting*.tar.gz
+historicalInvesting*.tgz
