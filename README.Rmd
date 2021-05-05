@@ -24,7 +24,7 @@ It is a shiny app created within the `{golem}` framework but also includes a cou
 
 ## Access
 
-You can access a live version of the app [here](https://www.google.com).
+You can access a live version of the app [here](https://spencermatthews.shinyapps.io/historicalInvesting/).
 
 ## Installation
 
