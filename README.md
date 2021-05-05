@@ -17,7 +17,8 @@ prince and dividend data for any stock ticker.
 
 ## Access
 
-You can access a live version of the app [here](https://www.google.com).
+You can access a live version of the app
+[here](https://spencermatthews.shinyapps.io/historicalInvesting/).
 
 ## Installation
 
