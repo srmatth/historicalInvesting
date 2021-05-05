@@ -14,7 +14,6 @@ mod_sidebar_ui <- function(id){
     hr(style = "color:black"),
     h5(""),
     br(),
-    br(),
     fluidRow(
       class = "ticker-input",
       col_6(
@@ -33,7 +32,6 @@ mod_sidebar_ui <- function(id){
       )
     ),
     br(),
-    br(),
     fluidRow(
       class = "ticker-input",
       col_4(
@@ -44,7 +42,9 @@ mod_sidebar_ui <- function(id){
           label = "Run Simulation"
         )
       )
-    )
+    ),
+    br(),
+    br()
   )
 }
     
@@ -87,7 +87,6 @@ mod_sidebar_server <- function(input, output, session, rv){
   
   rv$data <- eventReactive(input$go, {
     l <- rvtl(all_positions)
-    print(l)
     purrr::map_dfr(
       .x = l,
       .f = run_simulation
@@ -117,6 +116,10 @@ mod_sidebar_server <- function(input, output, session, rv){
     observeEvent(newest_position(), {
       all_positions[[paste0("pos_", btn)]] <- newest_position()
     })
+  })
+  
+  observeEvent(input$go, {
+    shinyjs::show("body_ui_1-btns_ui_1-buttons", asis = TRUE)
   })
  
 }

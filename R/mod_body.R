@@ -22,8 +22,8 @@ mod_body_ui <- function(id){
         shinydashboard::valueBoxOutput(outputId = ns("principle"), width = 12)
       )
     ),
-    plotly::plotlyOutput(outputId = ns("plt")) #,
-    # plotly::plotlyOutput(outputId = ns("sub_plt"))
+    plotly::plotlyOutput(outputId = ns("plt")),
+    mod_btns_ui(ns("btns_ui_1"))
   )
 }
     
@@ -32,6 +32,8 @@ mod_body_ui <- function(id){
 #' @noRd 
 mod_body_server <- function(input, output, session, rv){
   ns <- session$ns
+  
+  mod_btns_server("btns_ui_1", rv)
   
   output$principle <- shinydashboard::renderValueBox({
     req(rv$data())
@@ -105,17 +107,6 @@ mod_body_server <- function(input, output, session, rv){
     plotly::ggplotly(p, tooltip = "label") %>% 
       plotly::config(displayModeBar = F)
   })
-  
-  # output$sub_plt <- plotly::renderPlotly({
-  #   req(rv$data())
-  #   p <- rv$data() %>%
-  #     dplyr::mutate(date = lubridate::ymd(date)) %>%
-  #     ggplot2::ggplot() +
-  #     ggplot2::aes(x = date, y = curr_value) +
-  #     ggplot2::geom_line() +
-  #     ggplot2::facet_wrap(~ticker)
-  #   plotly::ggplotly(p)
-  # })
  
 }
     
