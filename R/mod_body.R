@@ -85,7 +85,7 @@ mod_body_server <- function(input, output, session, rv){
   output$anim <- renderImage({
     req(rv$anim())
     outfile <- tempfile(fileext='.gif')
-    gganimate::anim_save("outfile.gif", gganimate::animate(rv$anim(), end_pause = 30))
+    gganimate::anim_save("outfile.gif", gganimate::animate(rv$anim(), end_pause = 30), height = 400, width = 800)
     list(src = "outfile.gif",
          contentType = 'image/gif',
          width = 800,

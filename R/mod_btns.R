@@ -325,7 +325,7 @@ mod_btns_server <- function(input, output, session, rv){
           label = Date
         ) +
         ggplot2::geom_line(color = input$reg_line_color) +
-        ggplot2::geom_point() +
+        ggplot2::geom_point(color = input$reg_line_color) +
         ggplot2::theme_classic() +
         ggplot2::labs(
           title = input$reg_title
