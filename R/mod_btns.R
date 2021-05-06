@@ -13,7 +13,7 @@ mod_btns_ui <- function(id){
     shinyjs::hidden(
       fluidRow(
         id = ns("buttons"),
-        col_4(
+        col_6(
           col_12(
             class = "chart-opts",
             col_6(
@@ -57,19 +57,35 @@ mod_btns_ui <- function(id){
                   value = "Arial"
                 ),
                 textInput(
+                  inputId = ns("reg_font_color"),
+                  label = "Font Color",
+                  value = "black"
+                ),
+                textInput(
                   inputId = ns("reg_title"),
                   label = "Plot Title",
                   value = "Value of Portfolio Over Time"
                 ),
-                checkboxInput(
+                shinyWidgets::prettyCheckbox(
                   inputId = ns("reg_sp500"),
                   label = "Include S&P 500 Overlay",
-                  value = FALSE
+                  outline = TRUE,
+                  value = FALSE,
+                  icon = icon("check")
                 ),
-                checkboxInput(
+                shinyWidgets::prettyCheckbox(
                   inputId = ns("reg_contributed"),
                   label = "Include Amount Contributed Overlay",
-                  value = FALSE
+                  outline = TRUE,
+                  value = FALSE,
+                  icon = icon("check")
+                ),
+                shinyjs::hidden(
+                  textInput(
+                    inputId = ns("reg_contributed_color"),
+                    label = "Contributed Line Color",
+                    value = "gray"
+                  )
                 )
               )
             ),
@@ -84,77 +100,7 @@ mod_btns_ui <- function(id){
             )
           )
         ),
-        col_4(
-          col_12(
-            class = "chart-opts",
-            col_6(
-              actionButton(
-                inputId = ns("anim"),
-                label = "View Animated Chart"
-              )
-            ),
-            col_6(
-              style = "text-align:right",
-              actionButton(
-                inputId = ns("anim_show"),
-                label = HTML('Show Options   <i class="fas fa-plus"></i>'),
-                class = "expand"
-              ),
-              shinyjs::hidden(
-                actionButton(
-                  inputId = ns("anim_hide"),
-                  label = HTML('Hide Options   <i class="fas fa-minus"></i>'),
-                  class = "expand"
-                )
-              )
-            ),
-            shinyjs::hidden(
-              col_12(
-                id = ns("anim_opts"),
-                br(),
-                textInput(
-                  inputId = ns("anim_line_color"),
-                  label = "Line Color",
-                  value = "#370F06"
-                ),
-                textInput(
-                  inputId = ns("anim_bg_color"),
-                  label = "Background Color",
-                  value = "transparent"
-                ),
-                textInput(
-                  inputId = ns("anim_font_family"),
-                  label = "Font Family",
-                  value = "Arial"
-                ),
-                textInput(
-                  inputId = ns("anim_title"),
-                  label = "Plot Title",
-                  value = "Value of Portfolio Over Time"
-                ),
-                checkboxInput(
-                  inputId = ns("anim_sp500"),
-                  label = "Include S&P 500 Overlay",
-                  value = FALSE
-                ),
-                checkboxInput(
-                  inputId = ns("anim_contributed"),
-                  label = "Include Amount Contributed Overlay",
-                  value = FALSE
-                )
-              )
-            ),
-            col_6(
-              offset = 3,
-              style = "padding-top:15px",
-              actionButton(
-                inputId = ns("anim_download"),
-                label = "Download GIF"
-              )
-            )
-          )
-        ),
-        col_4(
+        col_6(
           col_12(
             class = "chart-opts",
             col_6(
@@ -185,7 +131,7 @@ mod_btns_ui <- function(id){
                 textInput(
                   inputId = ns("facet_line_color"),
                   label = "Line Color",
-                  value = "#370F06"
+                  value = "#942911"
                 ),
                 textInput(
                   inputId = ns("facet_bg_color"),
@@ -198,19 +144,43 @@ mod_btns_ui <- function(id){
                   value = "Arial"
                 ),
                 textInput(
+                  inputId = ns("facet_font_color"),
+                  label = "Font Color",
+                  value = "black"
+                ),
+                textInput(
                   inputId = ns("facet_title"),
                   label = "Plot Title",
-                  value = "Value of Portfolio Over Time"
+                  value = "Value of Positions Over Time"
                 ),
-                checkboxInput(
+                numericInput(
+                  inputId = ns("facet_ncol"),
+                  label = "Number of Columns for Plots",
+                  min = 1,
+                  max = 4,
+                  value = 2,
+                  step = 1
+                ),
+                shinyWidgets::prettyCheckbox(
                   inputId = ns("facet_sp500"),
                   label = "Include S&P 500 Overlay",
-                  value = FALSE
+                  outline = TRUE,
+                  value = FALSE,
+                  icon = icon("check")
                 ),
-                checkboxInput(
+                shinyWidgets::prettyCheckbox(
                   inputId = ns("facet_contributed"),
                   label = "Include Amount Contributed Overlay",
-                  value = FALSE
+                  outline = TRUE,
+                  value = FALSE,
+                  icon = icon("check")
+                ),
+                shinyjs::hidden(
+                  textInput(
+                    inputId = ns("facet_contributed_color"),
+                    label = "Contributed Line Color",
+                    value = "gray"
+                  )
                 )
               )
             ),
@@ -247,15 +217,20 @@ mod_btns_server <- function(input, output, session, rv){
       shinyjs::show(ns("reg_show"), asis = TRUE)
     })
     
-    observeEvent(input$anim_show, {
-      shinyjs::hide(ns("anim_show"), asis = TRUE)
-      shinyjs::show(ns("anim_hide"), asis = TRUE)
-      shinyjs::show(ns("anim_opts"), asis = TRUE)
+    observe({
+      if (input$reg_contributed) {
+        shinyjs::show(ns("reg_contributed_color"), asis = TRUE)
+      } else {
+        shinyjs::hide(ns("reg_contributed_color"), asis = TRUE)
+      }
     })
-    observeEvent(input$anim_hide, {
-      shinyjs::hide(ns("anim_hide"), asis = TRUE)
-      shinyjs::hide(ns("anim_opts"), asis = TRUE)
-      shinyjs::show(ns("anim_show"), asis = TRUE)
+    
+    observe({
+      if (input$facet_contributed) {
+        shinyjs::show(ns("facet_contributed_color"), asis = TRUE)
+      } else {
+        shinyjs::hide(ns("facet_contributed_color"), asis = TRUE)
+      }
     })
     
     observeEvent(input$facet_show, {
@@ -271,13 +246,23 @@ mod_btns_server <- function(input, output, session, rv){
     
     rv$plt <- eventReactive(input$reg, {
       req(rv$data())
-      rv$data() %>%
+      p <- rv$data() %>%
         dplyr::mutate(date = lubridate::ymd(date)) %>%
         dplyr::group_by(date) %>%
-        dplyr::summarize(curr_value = sum(curr_value)) %>%
+        dplyr::summarize(curr_value = sum(curr_value), tot_amt = sum(tot_amt)) %>%
         dplyr::ungroup() %>%
         dplyr::mutate(
-          Date = stringr::str_c(date, "\nValue: ", scales::dollar(curr_value, accuracy = .01))
+          contrib_overlay = input$reg_contributed,
+          Date = stringr::str_c(
+            date, 
+            "\nValue: ", 
+            scales::dollar(curr_value, accuracy = .01),
+            dplyr::if_else(
+              contrib_overlay, 
+              stringr::str_c("\nAmount Contributed: ", scales::dollar(tot_amt, accuracy = 0.01)),
+              rep(" ", times = nrow(.))
+            )
+          )
         ) %>%
         ggplot2::ggplot() +
         ggplot2::aes(
@@ -286,7 +271,15 @@ mod_btns_server <- function(input, output, session, rv){
           label = Date
         ) +
         ggplot2::geom_line(color = input$reg_line_color) +
-        ggplot2::theme_classic() +
+        ggplot2::theme_classic() 
+      if (input$reg_contributed) {
+        p <- p +
+          ggplot2::geom_step(
+            ggplot2::aes(x = date, y = tot_amt),
+            color = input$reg_contributed_color
+          )
+      }
+      p +
         ggplot2::labs(
           title = input$reg_title
         ) +
@@ -297,64 +290,39 @@ mod_btns_server <- function(input, output, session, rv){
         ) +
         ggplot2::theme(
           text = ggplot2::element_text(
-            family = input$reg_font_family
+            family = input$reg_font_family,
+            color = input$reg_font_color
+          ),
+          axis.text = ggplot2::element_text(
+            family = input$reg_font_family,
+            color = input$reg_font_color
           ),
           plot.background = ggplot2::element_rect(
             fill = input$reg_bg_color
           ),
           panel.background = ggplot2::element_rect(
             fill = input$reg_bg_color
-          )
+          ),
+          plot.title = ggplot2::element_text(hjust = 0.5)
         )
-    })
-    
-    rv$anim <- eventReactive(input$anim, {
-      req(rv$data())
-      rv$data() %>%
-        dplyr::mutate(date = lubridate::ymd(date)) %>%
-        dplyr::group_by(date) %>%
-        dplyr::summarize(curr_value = sum(curr_value)) %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate(
-          Date = stringr::str_c(date, "\nValue: ", scales::dollar(curr_value, accuracy = .01))
-        ) %>%
-        ggplot2::ggplot() +
-        ggplot2::aes(
-          x = date, 
-          y = curr_value,
-          label = Date
-        ) +
-        ggplot2::geom_line(color = input$reg_line_color) +
-        ggplot2::geom_point(color = input$reg_line_color) +
-        ggplot2::theme_classic() +
-        ggplot2::labs(
-          title = input$reg_title
-        ) +
-        ggplot2::xlab("Date") +
-        ggplot2::ylab("Value ($)") +
-        ggplot2::scale_y_continuous(
-          labels = scales::dollar_format(accuracy = 1)
-        ) +
-        ggplot2::theme(
-          text = ggplot2::element_text(
-            family = input$reg_font_family
-          ),
-          plot.background = ggplot2::element_rect(
-            fill = input$reg_bg_color
-          ),
-          panel.background = ggplot2::element_rect(
-            fill = input$reg_bg_color
-          )
-        ) +
-        gganimate::transition_reveal(date)
     })
     
     rv$facet <- eventReactive(input$facet, {
       req(rv$data())
-      rv$data() %>%
+      p <- rv$data() %>%
         dplyr::mutate(date = lubridate::ymd(date)) %>%
         dplyr::mutate(
-          Date = stringr::str_c(date, "\nValue: ", scales::dollar(curr_value, accuracy = .01))
+          contrib_overlay = input$facet_contributed,
+          Date = stringr::str_c(
+            date, 
+            "\nValue: ", 
+            scales::dollar(curr_value, accuracy = .01),
+            dplyr::if_else(
+              contrib_overlay, 
+              stringr::str_c("\nAmount Contributed: ", scales::dollar(tot_amt, accuracy = 0.01)),
+              rep(" ", times = nrow(.))
+            )
+          )
         ) %>%
         ggplot2::ggplot() +
         ggplot2::aes(
@@ -362,12 +330,20 @@ mod_btns_server <- function(input, output, session, rv){
           y = curr_value,
           label = Date
         ) +
-        ggplot2::geom_line(color = input$reg_line_color) +
+        ggplot2::geom_line(color = input$facet_line_color) 
+      if (input$facet_contributed) {
+        p <- p +
+          ggplot2::geom_step(
+            ggplot2::aes(x = date, y = tot_amt),
+            color = input$facet_contributed_color
+          )
+      }
+      p +
         ggplot2::theme_classic() +
         ggplot2::labs(
-          title = input$reg_title
+          title = input$facet_title
         ) +
-        ggplot2::facet_wrap(~ticker) +
+        ggplot2::facet_wrap(~ticker, ncol = input$facet_ncol) +
         ggplot2::xlab("Date") +
         ggplot2::ylab("Value ($)") +
         ggplot2::scale_y_continuous(
@@ -375,14 +351,20 @@ mod_btns_server <- function(input, output, session, rv){
         ) +
         ggplot2::theme(
           text = ggplot2::element_text(
-            family = input$reg_font_family
+            family = input$facet_font_family,
+            color = input$facet_font_color
+          ),
+          axis.text = ggplot2::element_text(
+            family = input$facet_font_family,
+            color = input$facet_font_color
           ),
           plot.background = ggplot2::element_rect(
-            fill = input$reg_bg_color
+            fill = input$facet_bg_color
           ),
           panel.background = ggplot2::element_rect(
-            fill = input$reg_bg_color
-          )
+            fill = input$facet_bg_color
+          ),
+          plot.title = ggplot2::element_text(hjust = 0.5)
         )
     })
     
@@ -401,6 +383,8 @@ mod_btns_server <- function(input, output, session, rv){
       shinyjs::hide("body_ui_1-facet", asis = TRUE)
       shinyjs::show("body_ui_1-anim", asis = TRUE)
     })
+    
+    rv$ncol <- eventReactive(input$facet, {input$facet_ncol})
     
 }
 

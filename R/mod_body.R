@@ -27,7 +27,7 @@ mod_body_ui <- function(id){
       imageOutput(outputId = ns("anim"))
     ),
     shinyjs::hidden(
-      plotly::plotlyOutput(outputId = ns("facet"))
+      uiOutput(outputId = ns("facet"))
     ),
     mod_btns_ui(ns("btns_ui_1"))
   )
@@ -94,8 +94,21 @@ mod_body_server <- function(input, output, session, rv){
     )
   }, deleteFile = TRUE)
   
-  output$facet <- plotly::renderPlotly({
-    req(rv$facet())
+  output$facet <- renderUI({
+    req(rv$facet(), rv$ncol())
+    plt_panels <- ggplot2::ggplot_build(rv$facet())$data[[1]]$PANEL %>% 
+      unique() %>% 
+      length()
+    plt_nrow <- ceiling(plt_panels / rv$ncol())
+    plotly::plotlyOutput(
+      outputId = ns("facet_plt"),
+      width = "100%",
+      height = 250 * plt_nrow
+    )
+  })
+  
+  output$facet_plt <- plotly::renderPlotly({
+    req(rv$facet(), rv$ncol())
     plotly::ggplotly(rv$facet(), tooltip = "label") %>%
       plotly::config(displayModeBar = FALSE)
   })

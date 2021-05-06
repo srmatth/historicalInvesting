@@ -10,17 +10,22 @@ get_historical_prices <- function(tickers) {
   purrr::map_dfr(
     .x = toupper(tickers),
     .f = ~{
-      logger::log_info("Downloading price data for {.x}")
-      url <- stringr::str_c(
-        "https://query1.finance.yahoo.com/v7/finance/download/",
-        .x,
-        "?period1=1&period2=",
-        round(as.numeric(Sys.time())) - (86400 * 4),
-        "&interval=1d&events=history"
-      )
-      readr::read_csv(url, col_types = "Ddddddd") %>%
-        dplyr::select(-`Adj Close`) %>%
-        magrittr::set_colnames(c("date", "open", "high", "low", "close", "volume")) %>%
+      # logger::log_info("Downloading price data for {.x}")
+      # url <- stringr::str_c(
+      #   "https://query1.finance.yahoo.com/v7/finance/download/",
+      #   .x,
+      #   "?period1=1&period2=",
+      #   round(as.numeric(Sys.time())) - (86400 * 4),
+      #   "&interval=1d&events=history"
+      # )
+      # readr::read_csv(url, col_types = "Ddddddd") %>%
+      #   dplyr::select(-`Adj Close`) %>%
+      #   magrittr::set_colnames(c("date", "open", "high", "low", "close", "volume")) %>%
+      #   dplyr::mutate(ticker = .x)
+      
+      path <- "/Users/spencer.matthews/Documents/Investing/value.investing/data/growth_models/Telecom Services/historical_prices_T.csv"
+      
+      readr::read_csv(path) %>%
         dplyr::mutate(ticker = .x)
     }
   )

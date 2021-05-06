@@ -43,8 +43,8 @@ a:active {
 
 .well {
   margin: 0;
-  margin-bottom:-101%;
-  padding-bottom:101%;
+  margin-bottom:-301%;
+  padding-bottom:301%;
   background-color: #acc3b6;
   border: none;
   border-radius: 0;
@@ -73,8 +73,8 @@ hr {
   white-space: normal;
 }
 
-.pretty .state label:after, .pretty .state label:before {
-  background-color: #ffffff !important;
+.pretty .state label:after, .pretty .state label:before{
+  background-color: gray !important;
 }
 
 .expand {
