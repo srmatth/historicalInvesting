@@ -120,6 +120,10 @@ mod_sidebar_server <- function(input, output, session, rv){
   
   observeEvent(input$go, {
     shinyjs::show("body_ui_1-btns_ui_1-buttons", asis = TRUE)
+    shinyjs::hide("body_ui_1-facet", asis = TRUE)
+    shinyjs::hide("body_ui_1-anim", asis = TRUE)
+    shinyjs::show("body_ui_1-plt", asis = TRUE)
+    shinyjs::click("body_ui_1-btns_ui_1-reg", asis = TRUE)
   })
  
 }

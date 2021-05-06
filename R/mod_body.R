@@ -23,6 +23,12 @@ mod_body_ui <- function(id){
       )
     ),
     plotly::plotlyOutput(outputId = ns("plt")),
+    shinyjs::hidden(
+      imageOutput(outputId = ns("anim"))
+    ),
+    shinyjs::hidden(
+      plotly::plotlyOutput(outputId = ns("facet"))
+    ),
     mod_btns_ui(ns("btns_ui_1"))
   )
 }
@@ -33,7 +39,7 @@ mod_body_ui <- function(id){
 mod_body_server <- function(input, output, session, rv){
   ns <- session$ns
   
-  mod_btns_server("btns_ui_1", rv)
+  callModule(mod_btns_server, "btns_ui_1", rv)
   
   output$principle <- shinydashboard::renderValueBox({
     req(rv$data())
@@ -71,41 +77,27 @@ mod_body_server <- function(input, output, session, rv){
   })
   
   output$plt <- plotly::renderPlotly({
-    req(rv$data())
-      p <- rv$data() %>%
-        dplyr::mutate(date = lubridate::ymd(date)) %>%
-        dplyr::group_by(date) %>%
-        dplyr::summarize(curr_value = sum(curr_value)) %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate(
-          Date = stringr::str_c(date, "\nValue: ", scales::dollar(curr_value, accuracy = .01))
-        ) %>%
-        ggplot2::ggplot() +
-        ggplot2::aes(
-          x = date, 
-          y = curr_value,
-          label = Date
-        ) +
-        ggplot2::geom_line(color = "#942911") +
-        ggplot2::theme_classic() +
-        ggplot2::labs(
-          title = "Value Over Time of Entire Portfolio"
-        ) +
-        ggplot2::xlab("Date") +
-        ggplot2::ylab("Value ($)") +
-        ggplot2::scale_y_continuous(
-          labels = scales::dollar_format(accuracy = 1)
-        ) +
-        ggplot2::theme(
-          plot.background = ggplot2::element_rect(
-            fill = "transparent"
-          ),
-          panel.background = ggplot2::element_rect(
-            fill = "transparent"
-          )
-        )
-    plotly::ggplotly(p, tooltip = "label") %>% 
-      plotly::config(displayModeBar = F)
+    req(rv$plt())
+    plotly::ggplotly(rv$plt(), tooltip = "label") %>% 
+      plotly::config(displayModeBar = FALSE)
+  })
+  
+  output$anim <- renderImage({
+    req(rv$anim())
+    outfile <- tempfile(fileext='.gif')
+    gganimate::anim_save("outfile.gif", gganimate::animate(rv$anim(), end_pause = 30))
+    list(src = "outfile.gif",
+         contentType = 'image/gif',
+         width = 800,
+         height = 400,
+         alt = "Gif of Stock Prices"
+    )
+  }, deleteFile = TRUE)
+  
+  output$facet <- plotly::renderPlotly({
+    req(rv$facet())
+    plotly::ggplotly(rv$facet(), tooltip = "label") %>%
+      plotly::config(displayModeBar = FALSE)
   })
  
 }

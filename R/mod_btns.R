@@ -44,7 +44,7 @@ mod_btns_ui <- function(id){
                 textInput(
                   inputId = ns("reg_line_color"),
                   label = "Line Color",
-                  value = "#370F06"
+                  value = "#942911"
                 ),
                 textInput(
                   inputId = ns("reg_bg_color"),
@@ -233,8 +233,7 @@ mod_btns_ui <- function(id){
 #' btns Server Functions
 #'
 #' @noRd 
-mod_btns_server <- function(id, rv){
-  moduleServer( id, function(input, output, session, rv){
+mod_btns_server <- function(input, output, session, rv){
     ns <- session$ns
     
     observeEvent(input$reg_show, {
@@ -270,7 +269,139 @@ mod_btns_server <- function(id, rv){
       shinyjs::show(ns("facet_show"), asis = TRUE)
     })
     
-  })
+    rv$plt <- eventReactive(input$reg, {
+      req(rv$data())
+      rv$data() %>%
+        dplyr::mutate(date = lubridate::ymd(date)) %>%
+        dplyr::group_by(date) %>%
+        dplyr::summarize(curr_value = sum(curr_value)) %>%
+        dplyr::ungroup() %>%
+        dplyr::mutate(
+          Date = stringr::str_c(date, "\nValue: ", scales::dollar(curr_value, accuracy = .01))
+        ) %>%
+        ggplot2::ggplot() +
+        ggplot2::aes(
+          x = date, 
+          y = curr_value,
+          label = Date
+        ) +
+        ggplot2::geom_line(color = input$reg_line_color) +
+        ggplot2::theme_classic() +
+        ggplot2::labs(
+          title = input$reg_title
+        ) +
+        ggplot2::xlab("Date") +
+        ggplot2::ylab("Value ($)") +
+        ggplot2::scale_y_continuous(
+          labels = scales::dollar_format(accuracy = 1)
+        ) +
+        ggplot2::theme(
+          text = ggplot2::element_text(
+            family = input$reg_font_family
+          ),
+          plot.background = ggplot2::element_rect(
+            fill = input$reg_bg_color
+          ),
+          panel.background = ggplot2::element_rect(
+            fill = input$reg_bg_color
+          )
+        )
+    })
+    
+    rv$anim <- eventReactive(input$anim, {
+      req(rv$data())
+      rv$data() %>%
+        dplyr::mutate(date = lubridate::ymd(date)) %>%
+        dplyr::group_by(date) %>%
+        dplyr::summarize(curr_value = sum(curr_value)) %>%
+        dplyr::ungroup() %>%
+        dplyr::mutate(
+          Date = stringr::str_c(date, "\nValue: ", scales::dollar(curr_value, accuracy = .01))
+        ) %>%
+        ggplot2::ggplot() +
+        ggplot2::aes(
+          x = date, 
+          y = curr_value,
+          label = Date
+        ) +
+        ggplot2::geom_line(color = input$reg_line_color) +
+        ggplot2::geom_point() +
+        ggplot2::theme_classic() +
+        ggplot2::labs(
+          title = input$reg_title
+        ) +
+        ggplot2::xlab("Date") +
+        ggplot2::ylab("Value ($)") +
+        ggplot2::scale_y_continuous(
+          labels = scales::dollar_format(accuracy = 1)
+        ) +
+        ggplot2::theme(
+          text = ggplot2::element_text(
+            family = input$reg_font_family
+          ),
+          plot.background = ggplot2::element_rect(
+            fill = input$reg_bg_color
+          ),
+          panel.background = ggplot2::element_rect(
+            fill = input$reg_bg_color
+          )
+        ) +
+        gganimate::transition_reveal(date)
+    })
+    
+    rv$facet <- eventReactive(input$facet, {
+      req(rv$data())
+      rv$data() %>%
+        dplyr::mutate(date = lubridate::ymd(date)) %>%
+        dplyr::mutate(
+          Date = stringr::str_c(date, "\nValue: ", scales::dollar(curr_value, accuracy = .01))
+        ) %>%
+        ggplot2::ggplot() +
+        ggplot2::aes(
+          x = date, 
+          y = curr_value,
+          label = Date
+        ) +
+        ggplot2::geom_line(color = input$reg_line_color) +
+        ggplot2::theme_classic() +
+        ggplot2::labs(
+          title = input$reg_title
+        ) +
+        ggplot2::facet_wrap(~ticker) +
+        ggplot2::xlab("Date") +
+        ggplot2::ylab("Value ($)") +
+        ggplot2::scale_y_continuous(
+          labels = scales::dollar_format(accuracy = 1)
+        ) +
+        ggplot2::theme(
+          text = ggplot2::element_text(
+            family = input$reg_font_family
+          ),
+          plot.background = ggplot2::element_rect(
+            fill = input$reg_bg_color
+          ),
+          panel.background = ggplot2::element_rect(
+            fill = input$reg_bg_color
+          )
+        )
+    })
+    
+    observeEvent(input$facet, {
+      shinyjs::hide("body_ui_1-plt", asis = TRUE)
+      shinyjs::hide("body_ui_1-anim", asis = TRUE)
+      shinyjs::show("body_ui_1-facet", asis = TRUE)
+    })
+    observeEvent(input$reg, {
+      shinyjs::hide("body_ui_1-facet", asis = TRUE)
+      shinyjs::hide("body_ui_1-anim", asis = TRUE)
+      shinyjs::show("body_ui_1-plt", asis = TRUE)
+    })
+    observeEvent(input$anim, {
+      shinyjs::hide("body_ui_1-plt", asis = TRUE)
+      shinyjs::hide("body_ui_1-facet", asis = TRUE)
+      shinyjs::show("body_ui_1-anim", asis = TRUE)
+    })
+    
 }
 
 ## To be copied in the UI
