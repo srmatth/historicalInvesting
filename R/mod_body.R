@@ -24,9 +24,6 @@ mod_body_ui <- function(id){
     ),
     plotly::plotlyOutput(outputId = ns("plt")),
     shinyjs::hidden(
-      imageOutput(outputId = ns("anim"))
-    ),
-    shinyjs::hidden(
       uiOutput(outputId = ns("facet"))
     ),
     mod_btns_ui(ns("btns_ui_1"))
@@ -81,18 +78,6 @@ mod_body_server <- function(input, output, session, rv){
     plotly::ggplotly(rv$plt(), tooltip = "label") %>% 
       plotly::config(displayModeBar = FALSE)
   })
-  
-  output$anim <- renderImage({
-    req(rv$anim())
-    outfile <- tempfile(fileext='.gif')
-    gganimate::anim_save("outfile.gif", gganimate::animate(rv$anim(), end_pause = 30), height = 400, width = 800)
-    list(src = "outfile.gif",
-         contentType = 'image/gif',
-         width = 800,
-         height = 400,
-         alt = "Gif of Stock Prices"
-    )
-  }, deleteFile = TRUE)
   
   output$facet <- renderUI({
     req(rv$facet(), rv$ncol())
