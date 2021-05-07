@@ -28,7 +28,9 @@ mod_ticker_ui <- function(id){
           dateInput(
             inputId = ns("start_date"),
             label = "Start Date",
-            value = Sys.Date() - lubridate::years(5)
+            value = Sys.Date() - lubridate::years(5),
+            min = "1970-01-01",
+            max = Sys.Date() - lubridate::days(4)
           )
         ),
         col_4(

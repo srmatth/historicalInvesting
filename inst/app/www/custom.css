@@ -110,3 +110,7 @@ hr {
   margin: 5px;
   height: 100%;
 }
+
+.progress-bar {
+  background-color: #0A2107;
+}

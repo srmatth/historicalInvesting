@@ -22,6 +22,25 @@ mod_body_ui <- function(id){
         shinydashboard::valueBoxOutput(outputId = ns("principle"), width = 12)
       )
     ),
+    shinyjs::hidden(
+      fluidRow(
+        id = ns("progress"),
+        style = "height:400px; vertical-align:middle;",
+        col_6(
+          offset = 3,
+          br(),
+          br(),
+          br(),
+          br(),
+          shinyWidgets::progressBar(
+            id = ns("prog"),
+            value = 0,
+            title = "Starting on Data",
+            striped = TRUE
+          )
+        )
+      )
+    ),
     plotly::plotlyOutput(outputId = ns("plt")),
     shinyjs::hidden(
       uiOutput(outputId = ns("facet"))

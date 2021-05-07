@@ -51,7 +51,7 @@ mod_sidebar_ui <- function(id){
 #' sidebar Server Function
 #'
 #' @noRd 
-mod_sidebar_server <- function(input, output, session, rv){
+mod_sidebar_server <- function(input, output, session, rv, outer_session){
   ns <- session$ns
   
   all_positions <- reactiveValues()
@@ -87,10 +87,21 @@ mod_sidebar_server <- function(input, output, session, rv){
   
   rv$data <- eventReactive(input$go, {
     l <- rvtl(all_positions)
-    purrr::map_dfr(
+    d <- purrr::map2_dfr(
       .x = l,
-      .f = run_simulation
+      .y = 1:length(l),
+      .f = ~{
+        shinyWidgets::updateProgressBar(
+          session = outer_session,
+          id = "body_ui_1-prog",
+          value = .y / length(l) * 100,
+          title = stringr::str_c("Downloading Data for ", .x$ticker)
+        )
+        run_simulation(.x)
+      }
     )
+    shinyjs::hide("body_ui_1-progress", asis = TRUE)
+    d
   })
   
   observeEvent(input$refresh, {
@@ -119,10 +130,10 @@ mod_sidebar_server <- function(input, output, session, rv){
   })
   
   observeEvent(input$go, {
-    shinyjs::show("body_ui_1-btns_ui_1-buttons", asis = TRUE)
     shinyjs::hide("body_ui_1-facet", asis = TRUE)
-    shinyjs::hide("body_ui_1-anim", asis = TRUE)
-    shinyjs::show("body_ui_1-plt", asis = TRUE)
+    shinyjs::hide("body_ui_1-plt", asis = TRUE)
+    shinyjs::show("body_ui_1-progress", asis = TRUE)
+    shinyjs::show("body_ui_1-btns_ui_1-buttons", asis = TRUE)
     shinyjs::click("body_ui_1-btns_ui_1-reg", asis = TRUE)
   })
  

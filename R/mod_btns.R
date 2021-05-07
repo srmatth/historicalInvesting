@@ -73,6 +73,13 @@ mod_btns_ui <- function(id){
                   value = FALSE,
                   icon = icon("check")
                 ),
+                shinyjs::hidden(
+                  textInput(
+                    inputId = ns("reg_sp500_color"),
+                    label = "S&P 500 Line Color",
+                    value = "#9D8420"
+                  )
+                ),
                 shinyWidgets::prettyCheckbox(
                   inputId = ns("reg_contributed"),
                   label = "Include Amount Contributed Overlay",
@@ -86,14 +93,19 @@ mod_btns_ui <- function(id){
                     label = "Contributed Line Color",
                     value = "gray"
                   )
+                ),
+                textInput(
+                  inputId = ns("reg_filename"),
+                  label = "Download File Name (no extension)",
+                  value = "Historical Chart"
                 )
               )
             ),
             col_6(
               offset = 3,
               style = "padding-top:15px",
-              actionButton(
-                inputId = ns("reg_download"),
+              downloadButton(
+                outputId = ns("reg_download"),
                 label = "Download PNG",
                 icon = icon("download")
               )
@@ -168,6 +180,13 @@ mod_btns_ui <- function(id){
                   value = FALSE,
                   icon = icon("check")
                 ),
+                shinyjs::hidden(
+                  textInput(
+                    inputId = ns("facet_sp500_color"),
+                    label = "S&P 500 Line Color",
+                    value = "#9D8420"
+                  )
+                ),
                 shinyWidgets::prettyCheckbox(
                   inputId = ns("facet_contributed"),
                   label = "Include Amount Contributed Overlay",
@@ -181,14 +200,19 @@ mod_btns_ui <- function(id){
                     label = "Contributed Line Color",
                     value = "gray"
                   )
+                ),
+                textInput(
+                  inputId = ns("facet_filename"),
+                  label = "Download File Name (no extension)",
+                  value = "Historical Chart by Ticker"
                 )
               )
             ),
             col_6(
               offset = 3,
               style = "padding-top:15px",
-              actionButton(
-                inputId = ns("facet_download"),
+              downloadButton(
+                outputId = ns("facet_download"),
                 label = "Download PNG",
                 icon = icon("download")
               )
@@ -224,12 +248,26 @@ mod_btns_server <- function(input, output, session, rv){
         shinyjs::hide(ns("reg_contributed_color"), asis = TRUE)
       }
     })
+    observe({
+      if (input$reg_sp500) {
+        shinyjs::show(ns("reg_sp500_color"), asis = TRUE)
+      } else {
+        shinyjs::hide(ns("reg_sp500_color"), asis = TRUE)
+      }
+    })
     
     observe({
       if (input$facet_contributed) {
         shinyjs::show(ns("facet_contributed_color"), asis = TRUE)
       } else {
         shinyjs::hide(ns("facet_contributed_color"), asis = TRUE)
+      }
+    })
+    observe({
+      if (input$facet_sp500) {
+        shinyjs::show(ns("facet_sp500_color"), asis = TRUE)
+      } else {
+        shinyjs::hide(ns("facet_sp500_color"), asis = TRUE)
       }
     })
     
@@ -249,10 +287,15 @@ mod_btns_server <- function(input, output, session, rv){
       p <- rv$data() %>%
         dplyr::mutate(date = lubridate::ymd(date)) %>%
         dplyr::group_by(date) %>%
-        dplyr::summarize(curr_value = sum(curr_value), tot_amt = sum(tot_amt)) %>%
+        dplyr::summarize(
+          curr_value = sum(curr_value), 
+          tot_amt = sum(tot_amt),
+          curr_sp500 = sum(curr_sp500)
+        ) %>%
         dplyr::ungroup() %>%
         dplyr::mutate(
           contrib_overlay = input$reg_contributed,
+          sp500_overlay = input$reg_sp500,
           Date = stringr::str_c(
             date, 
             "\nValue: ", 
@@ -260,6 +303,11 @@ mod_btns_server <- function(input, output, session, rv){
             dplyr::if_else(
               contrib_overlay, 
               stringr::str_c("\nAmount Contributed: ", scales::dollar(tot_amt, accuracy = 0.01)),
+              rep(" ", times = nrow(.))
+            ),
+            dplyr::if_else(
+              sp500_overlay, 
+              stringr::str_c("\nS&P 500 Value: ", scales::dollar(curr_sp500, accuracy = 0.01)),
               rep(" ", times = nrow(.))
             )
           )
@@ -277,6 +325,13 @@ mod_btns_server <- function(input, output, session, rv){
           ggplot2::geom_step(
             ggplot2::aes(x = date, y = tot_amt),
             color = input$reg_contributed_color
+          )
+      }
+      if (input$reg_sp500) {
+        p <- p +
+          ggplot2::geom_line(
+            ggplot2::aes(x = date, y = curr_sp500),
+            color = input$reg_sp500_color
           )
       }
       p +
@@ -313,6 +368,7 @@ mod_btns_server <- function(input, output, session, rv){
         dplyr::mutate(date = lubridate::ymd(date)) %>%
         dplyr::mutate(
           contrib_overlay = input$facet_contributed,
+          sp500_overlay = input$facet_sp500,
           Date = stringr::str_c(
             date, 
             "\nValue: ", 
@@ -320,6 +376,11 @@ mod_btns_server <- function(input, output, session, rv){
             dplyr::if_else(
               contrib_overlay, 
               stringr::str_c("\nAmount Contributed: ", scales::dollar(tot_amt, accuracy = 0.01)),
+              rep(" ", times = nrow(.))
+            ),
+            dplyr::if_else(
+              sp500_overlay, 
+              stringr::str_c("\nS&P 500 Value: ", scales::dollar(curr_sp500, accuracy = 0.01)),
               rep(" ", times = nrow(.))
             )
           )
@@ -336,6 +397,13 @@ mod_btns_server <- function(input, output, session, rv){
           ggplot2::geom_step(
             ggplot2::aes(x = date, y = tot_amt),
             color = input$facet_contributed_color
+          )
+      }
+      if (input$facet_sp500) {
+        p <- p +
+          ggplot2::geom_line(
+            ggplot2::aes(x = date, y = curr_sp500),
+            color = input$reg_sp500_color
           )
       }
       p +
@@ -378,13 +446,31 @@ mod_btns_server <- function(input, output, session, rv){
       shinyjs::hide("body_ui_1-anim", asis = TRUE)
       shinyjs::show("body_ui_1-plt", asis = TRUE)
     })
-    observeEvent(input$anim, {
-      shinyjs::hide("body_ui_1-plt", asis = TRUE)
-      shinyjs::hide("body_ui_1-facet", asis = TRUE)
-      shinyjs::show("body_ui_1-anim", asis = TRUE)
-    })
     
     rv$ncol <- eventReactive(input$facet, {input$facet_ncol})
+    
+    output$reg_download <- downloadHandler(
+      filename = function() {
+        stringr::str_c(
+          isolate(input$reg_filename),
+          ".png"
+        )
+      },
+      content = function(file) {
+        ggplot2::ggsave(file, plot = rv$plt())
+      }
+    )
+    output$facet_download <- downloadHandler(
+      filename = function() {
+        stringr::str_c(
+          isolate(input$facet_filename),
+          ".png"
+        )
+      },
+      content = function(file) {
+        ggplot2::ggsave(file, plot = rv$facet())
+      }
+    )
     
 }
 

@@ -11,11 +11,20 @@ run_simulation <- function(l) {
   prices <- get_historical_prices(l$ticker) %>%
     dplyr::filter(date > l$start_date) %>%
     dplyr::select(ticker, date, close)
+  sp500 <- get_historical_prices("%5EGSPC") %>%
+    dplyr::filter(date > l$start_date) %>%
+    dplyr::select(ticker, date, close)
   start_price <- prices %>%
     dplyr::pull(close) %>%
     `[`(1)
+  start_price_sp500 <- sp500 %>%
+    dplyr::pull(close) %>%
+    `[`(1)
   pcts <- prices %>%
-    dplyr::mutate(pct_growth = close / start_price)
+    dplyr::mutate(
+      pct_growth = close / start_price,
+      pct_growth_sp500 = sp500$close / start_price_sp500
+    )
   if (l$freq != "Never") {
     deposits <- data.frame(
       date = seq.Date(lubridate::ymd(l$start_date), Sys.Date(), by = tolower(l$freq)),
@@ -68,5 +77,8 @@ run_simulation <- function(l) {
   }
   
   principle %>%
-    dplyr::mutate(curr_value = base_amount * pct_growth)
+    dplyr::mutate(
+      curr_value = base_amount * pct_growth,
+      curr_sp500 = base_amount * pct_growth_sp500
+    )
 }
