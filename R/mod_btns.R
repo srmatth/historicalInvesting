@@ -284,6 +284,12 @@ mod_btns_server <- function(input, output, session, rv){
     
     rv$plt <- eventReactive(input$reg, {
       req(rv$data())
+      validate(
+        need(
+          nrow(rv$data()) > 1,
+          message = "None of the tickers entered returned any data!"
+        )
+      )
       p <- rv$data() %>%
         dplyr::mutate(date = lubridate::ymd(date)) %>%
         dplyr::group_by(date) %>%
@@ -352,6 +358,9 @@ mod_btns_server <- function(input, output, session, rv){
             family = input$reg_font_family,
             color = input$reg_font_color
           ),
+          axis.line = ggplot2::element_line(
+            color = input$reg_font_color
+          ),
           plot.background = ggplot2::element_rect(
             fill = input$reg_bg_color
           ),
@@ -364,6 +373,12 @@ mod_btns_server <- function(input, output, session, rv){
     
     rv$facet <- eventReactive(input$facet, {
       req(rv$data())
+      validate(
+        need(
+          nrow(rv$data()) > 1,
+          message = "None of the tickers entered returned any data!"
+        )
+      )
       p <- rv$data() %>%
         dplyr::mutate(date = lubridate::ymd(date)) %>%
         dplyr::mutate(
@@ -426,6 +441,9 @@ mod_btns_server <- function(input, output, session, rv){
             family = input$facet_font_family,
             color = input$facet_font_color
           ),
+          axis.line = ggplot2::element_line(
+            color = input$facet_font_color
+          ),
           plot.background = ggplot2::element_rect(
             fill = input$facet_bg_color
           ),
@@ -457,7 +475,7 @@ mod_btns_server <- function(input, output, session, rv){
         )
       },
       content = function(file) {
-        ggplot2::ggsave(file, plot = rv$plt())
+        ggplot2::ggsave(file, plot = rv$plt(), bg = isolate(input$reg_bg_color))
       }
     )
     output$facet_download <- downloadHandler(
@@ -468,7 +486,7 @@ mod_btns_server <- function(input, output, session, rv){
         )
       },
       content = function(file) {
-        ggplot2::ggsave(file, plot = rv$facet())
+        ggplot2::ggsave(file, plot = rv$facet(), bg = isolate(input$facet_bg_color))
       }
     )
     

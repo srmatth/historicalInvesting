@@ -44,6 +44,26 @@ mod_sidebar_ui <- function(id){
       )
     ),
     br(),
+    shinyjs::hidden(
+      fluidRow(
+        id = ns("warning"),
+        style = "background-color: #acc3b6",
+        col_8(
+          offset = 2,
+          style = "float:left",
+          p(
+            HTML('<i class="fas fa-exclamation-triangle"></i>'),
+            tags$em(
+              stringr::str_c(
+                "Warning: Data was not found for all the tickers you entered. ",
+                "View position charts to see which tickers were included."
+              )
+            ),
+            style = "font-family: Arial; font-size: 11pt;"
+          )
+        )
+      )
+    ),
     br()
   )
 }
@@ -87,6 +107,7 @@ mod_sidebar_server <- function(input, output, session, rv, outer_session){
   
   rv$data <- eventReactive(input$go, {
     l <- rvtl(all_positions)
+    sp500 <- get_historical_prices("%5EGSPC")
     d <- purrr::map2_dfr(
       .x = l,
       .y = 1:length(l),
@@ -97,14 +118,24 @@ mod_sidebar_server <- function(input, output, session, rv, outer_session){
           value = .y / length(l) * 100,
           title = stringr::str_c("Downloading Data for ", .x$ticker)
         )
-        run_simulation(.x)
+        run_simulation(.x, sp500)
       }
     )
+    if (dplyr::n_distinct(d$ticker) != length(l)) {
+      shinyjs::show(ns("warning"), asis = TRUE)
+    }
     shinyjs::hide("body_ui_1-progress", asis = TRUE)
+    shinyWidgets::updateProgressBar(
+      session = outer_session,
+      id = "body_ui_1-prog",
+      value = 0,
+      title = stringr::str_c("Initializing Data Setup")
+    )
     d
   })
   
   observeEvent(input$refresh, {
+    shinyjs::hide(ns("warning"), asis = TRUE)
     btn <- sum(input$add, input$refresh, 1)
     all_positions <<- NULL
     
@@ -130,6 +161,7 @@ mod_sidebar_server <- function(input, output, session, rv, outer_session){
   })
   
   observeEvent(input$go, {
+    shinyjs::hide(ns("warning"), asis = TRUE)
     shinyjs::hide("body_ui_1-facet", asis = TRUE)
     shinyjs::hide("body_ui_1-plt", asis = TRUE)
     shinyjs::show("body_ui_1-progress", asis = TRUE)

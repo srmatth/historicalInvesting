@@ -5,8 +5,8 @@ account: spencermatthews
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4081412
-bundleId: 4558610
+bundleId: 4574812
 url: https://spencermatthews.shinyapps.io/historicalInvesting/
-when: 1620190067.38449
+when: 1620495921.05185
 asMultiple: FALSE
 asStatic: FALSE

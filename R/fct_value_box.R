@@ -22,8 +22,6 @@
 #'
 #' @return html tags that can be placed inside
 #'   `shinydashboard::renderValueBox()`
-#'
-#' @export
 value_box <- function (value, subtitle, icon = NULL,
                        color = "#ffffff", background = "#2180BC", width = 4, href = NULL) {
   

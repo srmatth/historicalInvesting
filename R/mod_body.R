@@ -35,7 +35,7 @@ mod_body_ui <- function(id){
           shinyWidgets::progressBar(
             id = ns("prog"),
             value = 0,
-            title = "Starting on Data",
+            title = "Initializaing Data Setup",
             striped = TRUE
           )
         )
@@ -59,6 +59,12 @@ mod_body_server <- function(input, output, session, rv){
   
   output$principle <- shinydashboard::renderValueBox({
     req(rv$data())
+    validate(
+      need(
+        nrow(rv$data()) > 0,
+        message = " "
+      )
+    )
     rv$data() %>%
       dplyr::mutate(date = lubridate::ymd(date)) %>%
       dplyr::group_by(date) %>%
@@ -76,6 +82,12 @@ mod_body_server <- function(input, output, session, rv){
   })
   output$cur_val <- shinydashboard::renderValueBox({
     req(rv$data())
+    validate(
+      need(
+        nrow(rv$data()) > 0,
+        message = " "
+      )
+    )
     rv$data() %>%
       dplyr::mutate(date = lubridate::ymd(date)) %>%
       dplyr::group_by(date) %>%

@@ -1,6 +1,6 @@
 Package: historicalInvesting
 Title: Historical Investing Simulator
-Version: 0.1.1
+Version: 0.2.0
 Authors@R: person('Spencer', 'Matthews', email = 'srmatthews98@gamil.com', role = c('cre', 'aut'))
 Description: Functions and a shiny app that aid in seeing what historical results would have been for various portfolios.
 License: MIT + file LICENSE
