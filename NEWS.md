@@ -7,6 +7,10 @@
 - Added Error checking on the ticker name, any invalid ticker names will simply be excluded from the final chart and a warning message shown
 - Added general slick-ness to the UI in terms of hiding and showing charts, a progress bar when the data is downloaded, etc.
 
+## Enhancement
+
+- Re-deployed to [shinapps.io](https://spencermatthews.shinyapps.io/historicalInvesting/).
+
 ## Bug Fix
 
 - Fixed error when only one ticker was entered and it was an invalid ticker
