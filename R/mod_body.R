@@ -55,8 +55,14 @@ mod_body_ui <- function(id){
 mod_body_server <- function(input, output, session, rv){
   ns <- session$ns
   
+  #### Call Other Modules ----
+  
+  # The module that creates the customization boxes at the bottom
   callModule(mod_btns_server, "btns_ui_1", rv)
   
+  #### Render Outputs ----
+  
+  # The box showing the principal amount that has been invested
   output$principle <- shinydashboard::renderValueBox({
     req(rv$data())
     validate(
@@ -80,6 +86,7 @@ mod_body_server <- function(input, output, session, rv){
         icon = icon("hand-holding-usd")
       )
   })
+  # The box showing the current value of the given positions
   output$cur_val <- shinydashboard::renderValueBox({
     req(rv$data())
     validate(
@@ -103,13 +110,13 @@ mod_body_server <- function(input, output, session, rv){
         icon = icon("chart-line")
       )
   })
-  
+  # The plot that shows the basic line chart
   output$plt <- plotly::renderPlotly({
     req(rv$plt())
     plotly::ggplotly(rv$plt(), tooltip = "label") %>% 
       plotly::config(displayModeBar = FALSE)
   })
-  
+  # The plot that shows the faceted line chart (hidden by default)
   output$facet <- renderUI({
     req(rv$facet(), rv$ncol())
     plt_panels <- ggplot2::ggplot_build(rv$facet())$data[[1]]$PANEL %>% 
@@ -122,7 +129,6 @@ mod_body_server <- function(input, output, session, rv){
       height = 250 * plt_nrow
     )
   })
-  
   output$facet_plt <- plotly::renderPlotly({
     req(rv$facet(), rv$ncol())
     plotly::ggplotly(rv$facet(), tooltip = "label") %>%

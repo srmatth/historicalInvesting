@@ -106,7 +106,8 @@ mod_ticker_ui <- function(id){
 #' @noRd 
 mod_ticker_server <- function(input, output, session){
   ns <- session$ns
-  
+  # A simple list that will get returned to be passed into the 
+  # run_simulation function
   reactive({
     l <- list(
         ticker = input$ticker,

@@ -12,6 +12,7 @@ mod_sidebar_ui <- function(id){
   sidebarPanel(
     h2("Enter Positions:"),
     hr(style = "color:black"),
+    # This h5 is where we will attach the position inputs
     h5(""),
     br(),
     fluidRow(
@@ -44,6 +45,8 @@ mod_sidebar_ui <- function(id){
       )
     ),
     br(),
+    # Hidden warning to alert the user if a ticker was not found 
+    # on Yahoo Finance
     shinyjs::hidden(
       fluidRow(
         id = ns("warning"),
@@ -74,19 +77,20 @@ mod_sidebar_ui <- function(id){
 mod_sidebar_server <- function(input, output, session, rv, outer_session){
   ns <- session$ns
   
+  # Reactive values list to house the positions
   all_positions <- reactiveValues()
-  
+  # Create the first position by default when the app starts
   position_1 <- callModule(mod_ticker_server, paste0("position_", 1))
   insertUI(
     selector = "h5",
     where    = "beforeEnd",
     ui       = tagList(mod_ticker_ui(ns(paste0("position_", 1))))
   )
-  
+  # Add the first position to the positions list
   observe({
     all_positions[["pos_1"]] <- position_1()
   })
-  
+  # To run when the user adds an additional position
   observeEvent(input$add, {
     
     btn <- sum(input$add, input$refresh, 1)
@@ -104,7 +108,8 @@ mod_sidebar_server <- function(input, output, session, rv, outer_session){
     })
     
   })
-  
+  # When the run simulation button is clicked, create the data
+  # And update the progress bar at the same time
   rv$data <- eventReactive(input$go, {
     l <- rvtl(all_positions)
     sp500 <- get_historical_prices("%5EGSPC")
@@ -133,7 +138,7 @@ mod_sidebar_server <- function(input, output, session, rv, outer_session){
     )
     d
   })
-  
+  # Get rid of all inputs when the user resets all positions
   observeEvent(input$refresh, {
     shinyjs::hide(ns("warning"), asis = TRUE)
     btn <- sum(input$add, input$refresh, 1)
@@ -159,7 +164,7 @@ mod_sidebar_server <- function(input, output, session, rv, outer_session){
       all_positions[[paste0("pos_", btn)]] <- newest_position()
     })
   })
-  
+  # Shows/hides necessary when the user clicks "run simulation"
   observeEvent(input$go, {
     shinyjs::hide(ns("warning"), asis = TRUE)
     shinyjs::hide("body_ui_1-facet", asis = TRUE)

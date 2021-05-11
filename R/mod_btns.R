@@ -13,6 +13,7 @@ mod_btns_ui <- function(id){
     shinyjs::hidden(
       fluidRow(
         id = ns("buttons"),
+        # Customization for the basic line chart
         col_6(
           col_12(
             class = "chart-opts",
@@ -112,6 +113,7 @@ mod_btns_ui <- function(id){
             )
           )
         ),
+        # Customization for the faceted line chart
         col_6(
           col_12(
             class = "chart-opts",
@@ -230,17 +232,21 @@ mod_btns_ui <- function(id){
 mod_btns_server <- function(input, output, session, rv){
     ns <- session$ns
     
+    #### Observers ----
+    
+    # To trigger when the chart options are shown
     observeEvent(input$reg_show, {
       shinyjs::hide(ns("reg_show"), asis = TRUE)
       shinyjs::show(ns("reg_hide"), asis = TRUE)
       shinyjs::show(ns("reg_opts"), asis = TRUE)
     })
+    # To trigger when the char options are hidden
     observeEvent(input$reg_hide, {
       shinyjs::hide(ns("reg_hide"), asis = TRUE)
       shinyjs::hide(ns("reg_opts"), asis = TRUE)
       shinyjs::show(ns("reg_show"), asis = TRUE)
     })
-    
+    # To show/hide the line color for the contributed amount
     observe({
       if (input$reg_contributed) {
         shinyjs::show(ns("reg_contributed_color"), asis = TRUE)
@@ -248,6 +254,7 @@ mod_btns_server <- function(input, output, session, rv){
         shinyjs::hide(ns("reg_contributed_color"), asis = TRUE)
       }
     })
+    # To show/hide the line color for the S&P500 overlay
     observe({
       if (input$reg_sp500) {
         shinyjs::show(ns("reg_sp500_color"), asis = TRUE)
@@ -255,7 +262,7 @@ mod_btns_server <- function(input, output, session, rv){
         shinyjs::hide(ns("reg_sp500_color"), asis = TRUE)
       }
     })
-    
+    # To show/hide the color of the contributed amounts
     observe({
       if (input$facet_contributed) {
         shinyjs::show(ns("facet_contributed_color"), asis = TRUE)
@@ -263,6 +270,7 @@ mod_btns_server <- function(input, output, session, rv){
         shinyjs::hide(ns("facet_contributed_color"), asis = TRUE)
       }
     })
+    # To show/hide the color of the S&P500 overlay
     observe({
       if (input$facet_sp500) {
         shinyjs::show(ns("facet_sp500_color"), asis = TRUE)
@@ -270,18 +278,32 @@ mod_btns_server <- function(input, output, session, rv){
         shinyjs::hide(ns("facet_sp500_color"), asis = TRUE)
       }
     })
-    
+    # To trigger when the facet chart options are shown
     observeEvent(input$facet_show, {
       shinyjs::hide(ns("facet_show"), asis = TRUE)
       shinyjs::show(ns("facet_hide"), asis = TRUE)
       shinyjs::show(ns("facet_opts"), asis = TRUE)
     })
+    # To trigger when the facet chart options are hidden
     observeEvent(input$facet_hide, {
       shinyjs::hide(ns("facet_hide"), asis = TRUE)
       shinyjs::hide(ns("facet_opts"), asis = TRUE)
       shinyjs::show(ns("facet_show"), asis = TRUE)
     })
+    # To run when the user clicks the "View Chart by Position" button
+    observeEvent(input$facet, {
+      shinyjs::hide("body_ui_1-plt", asis = TRUE)
+      shinyjs::show("body_ui_1-facet", asis = TRUE)
+    })
+    # To run when the user clicks the View Chart button
+    observeEvent(input$reg, {
+      shinyjs::hide("body_ui_1-facet", asis = TRUE)
+      shinyjs::show("body_ui_1-plt", asis = TRUE)
+    })
     
+    #### Reactive Values ----
+    
+    # The basic line plot, created with any specified customization
     rv$plt <- eventReactive(input$reg, {
       req(rv$data())
       validate(
@@ -370,7 +392,7 @@ mod_btns_server <- function(input, output, session, rv){
           plot.title = ggplot2::element_text(hjust = 0.5)
         )
     })
-    
+    # The facet plot, also created with any customization
     rv$facet <- eventReactive(input$facet, {
       req(rv$data())
       validate(
@@ -453,20 +475,12 @@ mod_btns_server <- function(input, output, session, rv){
           plot.title = ggplot2::element_text(hjust = 0.5)
         )
     })
-    
-    observeEvent(input$facet, {
-      shinyjs::hide("body_ui_1-plt", asis = TRUE)
-      shinyjs::hide("body_ui_1-anim", asis = TRUE)
-      shinyjs::show("body_ui_1-facet", asis = TRUE)
-    })
-    observeEvent(input$reg, {
-      shinyjs::hide("body_ui_1-facet", asis = TRUE)
-      shinyjs::hide("body_ui_1-anim", asis = TRUE)
-      shinyjs::show("body_ui_1-plt", asis = TRUE)
-    })
-    
+    # The number of columns in the facet plot (for sizing of the output)
     rv$ncol <- eventReactive(input$facet, {input$facet_ncol})
     
+    #### Render Outputs ----
+    
+    # Download output for the line chart
     output$reg_download <- downloadHandler(
       filename = function() {
         stringr::str_c(
@@ -478,6 +492,7 @@ mod_btns_server <- function(input, output, session, rv){
         ggplot2::ggsave(file, plot = rv$plt(), bg = isolate(input$reg_bg_color))
       }
     )
+    # Download output for the line chart by position
     output$facet_download <- downloadHandler(
       filename = function() {
         stringr::str_c(
