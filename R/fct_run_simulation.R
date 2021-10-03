@@ -13,7 +13,8 @@ run_simulation <- function(l, sp500) {
     dplyr::select(ticker, date, close)
   if (nrow(prices) > 0) {
     sp500 <- sp500  %>%
-      dplyr::filter(date > l$start_date) %>%
+      # dplyr::filter(date > l$start_date) %>%
+      dplyr::filter(date %in% prices$date) %>%
       dplyr::select(ticker, date, close)
     start_price <- prices %>%
       dplyr::pull(close) %>%
